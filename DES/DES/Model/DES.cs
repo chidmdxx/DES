@@ -199,6 +199,8 @@ namespace DES.Model
             return toReturn;
         }
 
+
+
         private BitArray Sbox1(BitArray bits)
         {
             if (bits.Length != 6)
@@ -247,7 +249,7 @@ namespace DES.Model
                     default: return null;
                 }
             }
-            if (!bits.Bit(1) && bits.Bit(6))
+            else if (!bits.Bit(1) && bits.Bit(6))
             {
                 switch (inner)
                 {
@@ -287,7 +289,7 @@ namespace DES.Model
                 }
             }
 
-            if (bits.Bit(1) && !bits.Bit(6))
+            else if (bits.Bit(1) && !bits.Bit(6))
             {
                 switch (inner)
                 {
@@ -327,7 +329,7 @@ namespace DES.Model
                 }
             }
 
-            if (bits.Bit(1) && bits.Bit(6))
+            else if (bits.Bit(1) && bits.Bit(6))
             {
                 switch (inner)
                 {
@@ -419,7 +421,7 @@ namespace DES.Model
                     default: return null;
                 }
             }
-            if (!bits.Bit(1) && bits.Bit(6))
+            else if (!bits.Bit(1) && bits.Bit(6))
             {
                 switch (inner)
                 {
@@ -459,7 +461,7 @@ namespace DES.Model
                 }
             }
 
-            if (bits.Bit(1) && !bits.Bit(6))
+            else  if (bits.Bit(1) && !bits.Bit(6))
             {
                 switch (inner)
                 {
@@ -499,7 +501,7 @@ namespace DES.Model
                 }
             }
 
-            if (bits.Bit(1) && bits.Bit(6))
+            else if (bits.Bit(1) && bits.Bit(6))
             {
                 switch (inner)
                 {
