@@ -47,7 +47,7 @@ namespace DES.Model
 
         private BitArray InitialPermutation(BitArray bits)
         {
-            if(bits.Length!=64)
+            if (bits.Length != 64)
             {
                 return null;
             }
@@ -116,7 +116,7 @@ namespace DES.Model
             toReturn.Bit(61, bits.Bit(31));
             toReturn.Bit(62, bits.Bit(23));
             toReturn.Bit(63, bits.Bit(15));
-            toReturn.Bit(64, bits.Bit(7)); 
+            toReturn.Bit(64, bits.Bit(7));
             #endregion
 
             return toReturn;
@@ -199,7 +199,30 @@ namespace DES.Model
             return toReturn;
         }
 
+        private List<BitArray> ExpansionPermutation(BitArray bits)
+        {
+            if (bits.Length != 32)
+            {
+                return null;
+            }
+            var toReturn = new List<BitArray>();
+            for (var i = 0; i < 8; i++)
+            {
+                var temp = new BitArray(6);
+                temp.Bit(2, bits.Bit((i * 4) + 1));
+                temp.Bit(3, bits.Bit((i * 4) + 2));
+                temp.Bit(4, bits.Bit((i * 4) + 3));
+                temp.Bit(5, bits.Bit((i * 4) + 4));
 
+                int assign = i == 0 ? 32 : ((i + 1) * 4) + 1;
+                temp.Bit(1, bits.Bit(assign));
+                assign = i == 7 ? 1 : ((i + 1) * 4) + 1;
+                temp.Bit(6, bits.Bit(assign));
+                toReturn.Add(temp);
+            }
+
+            return toReturn;
+        }
 
         private BitArray Sbox1(BitArray bits)
         {
@@ -461,7 +484,7 @@ namespace DES.Model
                 }
             }
 
-            else  if (bits.Bit(1) && !bits.Bit(6))
+            else if (bits.Bit(1) && !bits.Bit(6))
             {
                 switch (inner)
                 {
