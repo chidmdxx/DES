@@ -14,6 +14,10 @@ namespace DES.Model
             return bits[bits.Length - index];
         }
 
+        public static void Bit(this BitArray bits, int index, bool value)
+        {
+            bits[bits.Length - index] = value;
+        }
 
         public static byte[] ToByteArray(this BitArray bits)
         {
