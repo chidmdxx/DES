@@ -224,6 +224,7 @@ namespace DES.Model
             return toReturn;
         }
 
+        #region SBox methods
         private BitArray Sbox1(BitArray bits)
         {
             if (bits.Length != 6)
@@ -237,6 +238,7 @@ namespace DES.Model
             {
                 switch (inner)
                 {
+                    #region asignacion
                     case 0: toReturn = new BitArray(BitConverter.GetBytes(14));
                         break;
                     case 1: toReturn = new BitArray(BitConverter.GetBytes(4));
@@ -270,12 +272,14 @@ namespace DES.Model
                     case 15: toReturn = new BitArray(BitConverter.GetBytes(7));
                         break;
                     default: return null;
+                    #endregion
                 }
             }
             else if (!bits.Bit(1) && bits.Bit(6))
             {
                 switch (inner)
                 {
+                    #region asignacion
                     case 0: toReturn = new BitArray(BitConverter.GetBytes(0));
                         break;
                     case 1: toReturn = new BitArray(BitConverter.GetBytes(15));
@@ -309,6 +313,7 @@ namespace DES.Model
                     case 15: toReturn = new BitArray(BitConverter.GetBytes(8));
                         break;
                     default: return null;
+                    #endregion
                 }
             }
 
@@ -316,6 +321,7 @@ namespace DES.Model
             {
                 switch (inner)
                 {
+                    #region asignacion
                     case 0: toReturn = new BitArray(BitConverter.GetBytes(4));
                         break;
                     case 1: toReturn = new BitArray(BitConverter.GetBytes(1));
@@ -349,6 +355,7 @@ namespace DES.Model
                     case 15: toReturn = new BitArray(BitConverter.GetBytes(0));
                         break;
                     default: return null;
+                    #endregion
                 }
             }
 
@@ -356,6 +363,7 @@ namespace DES.Model
             {
                 switch (inner)
                 {
+                    #region asignacion
                     case 0: toReturn = new BitArray(BitConverter.GetBytes(15));
                         break;
                     case 1: toReturn = new BitArray(BitConverter.GetBytes(12));
@@ -389,13 +397,13 @@ namespace DES.Model
                     case 15: toReturn = new BitArray(BitConverter.GetBytes(13));
                         break;
                     default: return null;
+                    #endregion
                 }
             }
 
             toReturn.Length = 4;
             return toReturn;
         }
-
         private BitArray Sbox2(BitArray bits)
         {
             if (bits.Length != 6)
@@ -567,17 +575,13 @@ namespace DES.Model
             toReturn.Length = 4;
             return toReturn;
         }
-        
-        
-        
-        
-         private BitArray Sbox3(BitArray bits)
+        private BitArray Sbox3(BitArray bits)
         {
             if (bits.Length != 6)
             {
                 return null;
             }
-	
+
             BitArray toReturn = null;
             int inner = bits.GetInnerBits().ToInt();
 
@@ -624,7 +628,7 @@ namespace DES.Model
             {
                 switch (inner)
                 {
-	
+
                     case 0: toReturn = new BitArray(BitConverter.GetBytes(13));
                         break;
                     case 1: toReturn = new BitArray(BitConverter.GetBytes(7));
@@ -665,7 +669,7 @@ namespace DES.Model
             {
                 switch (inner)
                 {
-			
+
                     case 0: toReturn = new BitArray(BitConverter.GetBytes(13));
                         break;
                     case 1: toReturn = new BitArray(BitConverter.GetBytes(6));
@@ -745,16 +749,13 @@ namespace DES.Model
             toReturn.Length = 4;
             return toReturn;
         }
-
-
-
         private BitArray Sbox4(BitArray bits)
         {
             if (bits.Length != 6)
             {
                 return null;
             }
-			
+
             BitArray toReturn = null;
             int inner = bits.GetInnerBits().ToInt();
 
@@ -801,7 +802,7 @@ namespace DES.Model
             {
                 switch (inner)
                 {
-	
+
                     case 0: toReturn = new BitArray(BitConverter.GetBytes(13));
                         break;
                     case 1: toReturn = new BitArray(BitConverter.GetBytes(8));
@@ -842,7 +843,7 @@ namespace DES.Model
             {
                 switch (inner)
                 {
-			
+
                     case 0: toReturn = new BitArray(BitConverter.GetBytes(10));
                         break;
                     case 1: toReturn = new BitArray(BitConverter.GetBytes(6));
@@ -922,16 +923,13 @@ namespace DES.Model
             toReturn.Length = 4;
             return toReturn;
         }
-        
-        
-        
         private BitArray Sbox5(BitArray bits)
         {
             if (bits.Length != 6)
             {
                 return null;
             }
-	
+
             BitArray toReturn = null;
             int inner = bits.GetInnerBits().ToInt();
 
@@ -1018,7 +1016,7 @@ namespace DES.Model
             {
                 switch (inner)
                 {
-			
+
                     case 0: toReturn = new BitArray(BitConverter.GetBytes(4));
                         break;
                     case 1: toReturn = new BitArray(BitConverter.GetBytes(2));
@@ -1098,8 +1096,6 @@ namespace DES.Model
             toReturn.Length = 4;
             return toReturn;
         }
-        
-        
         private BitArray Sbox6(BitArray bits)
         {
             if (bits.Length != 6)
@@ -1153,7 +1149,7 @@ namespace DES.Model
             {
                 switch (inner)
                 {
-		
+
                     case 0: toReturn = new BitArray(BitConverter.GetBytes(10));
                         break;
                     case 1: toReturn = new BitArray(BitConverter.GetBytes(15));
@@ -1194,7 +1190,7 @@ namespace DES.Model
             {
                 switch (inner)
                 {
-			
+
                     case 0: toReturn = new BitArray(BitConverter.GetBytes(9));
                         break;
                     case 1: toReturn = new BitArray(BitConverter.GetBytes(14));
@@ -1274,9 +1270,6 @@ namespace DES.Model
             toReturn.Length = 4;
             return toReturn;
         }
-        
-        
-        
         private BitArray Sbox7(BitArray bits)
         {
             if (bits.Length != 6)
@@ -1330,7 +1323,7 @@ namespace DES.Model
             {
                 switch (inner)
                 {
-		
+
                     case 0: toReturn = new BitArray(BitConverter.GetBytes(13));
                         break;
                     case 1: toReturn = new BitArray(BitConverter.GetBytes(0));
@@ -1450,8 +1443,6 @@ namespace DES.Model
             toReturn.Length = 4;
             return toReturn;
         }
-        
-        
         private BitArray Sbox8(BitArray bits)
         {
             if (bits.Length != 6)
@@ -1461,7 +1452,7 @@ namespace DES.Model
 
             BitArray toReturn = null;
             int inner = bits.GetInnerBits().ToInt();
-	
+
             if (!bits.Bit(1) && !bits.Bit(6))
             {
                 switch (inner)
@@ -1505,7 +1496,7 @@ namespace DES.Model
             {
                 switch (inner)
                 {
-		
+
                     case 0: toReturn = new BitArray(BitConverter.GetBytes(1));
                         break;
                     case 1: toReturn = new BitArray(BitConverter.GetBytes(15));
@@ -1625,10 +1616,8 @@ namespace DES.Model
 
             toReturn.Length = 4;
             return toReturn;
-        }
-        
-        
-        
-        
+        } 
+        #endregion
+ 
     }
 }
