@@ -39,6 +39,10 @@ namespace DES.Model
         public byte[] Cipher(string key, int rounds = 5)
         {
             var builder = new StringBuilder();
+            var left = new BitArray(32);
+            var right = new BitArray(32);
+            var c = new BitArray(28);
+            var d = new BitArray(28);
             Ciphertext = string.Empty;
             var keyBytes = Encoding.UTF8.GetBytes(key);
             var keyBits = new BitArray(keyBytes);
@@ -50,9 +54,33 @@ namespace DES.Model
             builder.AppendFormat("Initial permutation result {0}{1}", toCipher.Print(), Environment.NewLine);
             keyBits = PermutedChoiceOne(keyBits);
             builder.AppendFormat("Permuted choice one {0}{1}", keyBits.Print(), Environment.NewLine);
+            for (var i = 1; i <= 64; i++) //copiar los arreglos de bit a los nuevos Array.Copy no sirve
+            {
+                if (i <= 32)
+                {
+                    left.Bit(i, toCipher.Bit(i));
+                }
+                else
+                {
+                    right.Bit(i - 32, toCipher.Bit(i));
+                }
+                if (i <= 28)
+                {
+                    c.Bit(i, toCipher.Bit(i));
+                }
+                else if (i <= 56)
+                {
+                    d.Bit(i - 28, toCipher.Bit(i));
+                }
+            }
+            builder.AppendFormat("Left {0}{1}", left.Print(), Environment.NewLine);
+            builder.AppendFormat("Right {0}{1}", right.Print(), Environment.NewLine);
+            builder.AppendFormat("c0 {0}{1}", c.Print(), Environment.NewLine);
+            builder.AppendFormat("d0 {0}{1}", d.Print(), Environment.NewLine);
+
             for (var i = 1; i <= rounds; i++)
             {
-
+                var expansionList = ExpansionPermutation(right);
             }
 
             return toCipher.ToByteArray();
@@ -433,6 +461,30 @@ namespace DES.Model
             toReturn.Bit(47, bits.Bit(29));
             toReturn.Bit(48, bits.Bit(32));
             #endregion
+
+            return toReturn;
+        }
+
+        private List<BitArray> PermutedChoiceTwoListing(BitArray c, BitArray d)
+        {
+            if (c.Length != 28 || d.Length != 28)
+            {
+                return null;
+            }
+            var toReturn = new List<BitArray>();
+            var bits = PermutedChoiceTwo(c.Concat(d));
+            for (var i = 0; i < 8; i++)
+            {
+                var temp = new BitArray(6);
+                temp.Bit(1, bits.Bit((i * 6) + 1));
+                temp.Bit(2, bits.Bit((i * 6) + 2));
+                temp.Bit(3, bits.Bit((i * 6) + 3));
+                temp.Bit(4, bits.Bit((i * 6) + 4));
+                temp.Bit(5, bits.Bit((i * 6) + 5));
+                temp.Bit(6, bits.Bit((i * 6) + 6));
+
+                toReturn.Add(temp);
+            }
 
             return toReturn;
         }

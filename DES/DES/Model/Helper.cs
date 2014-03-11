@@ -93,13 +93,30 @@ namespace DES.Model
                 {
                     for (var j = 1; j <= column; j++)
                     {
-                        append = bits.Bit((i * column) + j ) ? "1" : "0";
+                        append = bits.Bit((i * column) + j) ? "1" : "0";
                         builder.AppendFormat(" {0} ", append);
                     }
                     builder.Append(Environment.NewLine);
                 }
             }
             return builder.ToString();
+        }
+
+        public static BitArray Concat(this BitArray bits, BitArray back)
+        {
+            var toReturn = new BitArray(bits.Length + back.Length);
+            for (var i = 1; i <= toReturn.Length; i++)
+            {
+                if (i <= bits.Length)
+                {
+                    toReturn.Bit(i, bits.Bit(i));
+                }
+                else
+                {
+                    toReturn.Bit(i, back.Bit(i - bits.Length));
+                }
+            }
+            return toReturn;
         }
     }
 }
