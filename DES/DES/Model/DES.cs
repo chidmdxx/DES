@@ -36,11 +36,26 @@ namespace DES.Model
 
         }
 
-        public byte[] Cipher(int rounds=5)
+        public byte[] Cipher(string key, int rounds = 5)
         {
             var builder = new StringBuilder();
             Ciphertext = string.Empty;
+            var keyBytes = Encoding.UTF8.GetBytes(key);
+            var keyBits = new BitArray(keyBytes);
+            var toCipherBytes = Encoding.UTF8.GetBytes(Ciphertext);
+            var toCipher = new BitArray(toCipherBytes);
+            builder.AppendFormat("Transformed {0} text to {1} {2}", Ciphertext, toCipher.Print(), Environment.NewLine);
+            builder.AppendFormat("Using key {0} with bits {1} {2}", key, keyBits.Print(), Environment.NewLine);
+            toCipher = InitialPermutation(toCipher);
+            builder.AppendFormat("Initial permutation result {0}{1}", toCipher.Print(), Environment.NewLine);
+            keyBits = PermutedChoiceOne(keyBits);
+            builder.AppendFormat("Permuted choice one {0}{1}", keyBits.Print(), Environment.NewLine);
+            for (var i = 1; i <= rounds; i++)
+            {
 
+            }
+
+            return toCipher.ToByteArray();
         }
 
         private BitArray InitialPermutation(BitArray bits)
@@ -278,7 +293,7 @@ namespace DES.Model
 
         private BitArray SBoxSelector(BitArray bits, int number)
         {
-            switch(number)
+            switch (number)
             {
                 case 1: return Sbox1(bits);
                 case 2: return Sbox2(bits);
@@ -298,7 +313,7 @@ namespace DES.Model
             {
                 return null;
             }
-            var toReturn = new BitArray(bits.Length-8);
+            var toReturn = new BitArray(bits.Length - 8);
             #region asignaciones de los valores
             toReturn.Bit(1, bits.Bit(57));
             toReturn.Bit(2, bits.Bit(49));
