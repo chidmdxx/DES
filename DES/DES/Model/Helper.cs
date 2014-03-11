@@ -58,9 +58,9 @@ namespace DES.Model
             bool first = bits.Bit(1); //guardar el primero
             for (var i = 2; i <= bits.Length; i++)
             {
-                bits[i - 1] = bits[i];
+                bits.Bit(i - 1, bits.Bit(i));
             }
-            bits[bits.Length] = first;
+            bits.Bit(bits.Length, first);
         }
 
         public static BitArray GetInnerBits(this BitArray bits)
@@ -83,7 +83,11 @@ namespace DES.Model
                 for (var i = 1; i <= bits.Length; i++)
                 {
                     append = bits.Bit(i) ? "1" : "0"; //imprime 0 y 1 y no true y false
-                    builder.AppendFormat(" {0} ", append);
+                    builder.AppendFormat("{0}", append);
+                    if(i%4==0)
+                    {
+                        builder.Append(" ");
+                    }
                 }
             }
             else
@@ -94,7 +98,11 @@ namespace DES.Model
                     for (var j = 1; j <= column; j++)
                     {
                         append = bits.Bit((i * column) + j) ? "1" : "0";
-                        builder.AppendFormat(" {0} ", append);
+                        builder.AppendFormat("{0}", append);
+                        if (i % 4 == 0)
+                        {
+                            builder.Append(" ");
+                        }
                     }
                     builder.Append(Environment.NewLine);
                 }
