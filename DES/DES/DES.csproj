@@ -68,7 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\Helper.cs" />
-    <Compile Include="Model\DES.cs" />
+    <Compile Include="Model\DESClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

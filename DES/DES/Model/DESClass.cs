@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DES.Model
 {
-    class DES
+    class DESClass
     {
         private string plaintext;
         private string ciphertext;
@@ -31,7 +31,7 @@ namespace DES.Model
             set { ciphertext = value; }
         }
 
-        public DES()
+        public DESClass()
         {
 
         }
