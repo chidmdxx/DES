@@ -113,10 +113,11 @@ namespace DES.Model
             toCipher = InverseInitialPermutation(left.Concat(right));
             builder.AppendFormat("Inverse permutation result {0}{1}", toCipher.Print(), Environment.NewLine);
             Work = builder.ToString();
+            Ciphertext = toCipher.ToByteArray().ByteArrayToString();
             return toCipher.ToByteArray();
         }
 
-        public byte[] Cipher(byte[] key, byte[] cipher, int rounds = 5)
+        public byte[] CipherBytes(string key, int rounds = 5)
         {
             var builder = new StringBuilder();
             var left = new BitArray(32);
@@ -124,8 +125,8 @@ namespace DES.Model
             var c = new BitArray(28);
             var d = new BitArray(28);
             Ciphertext = string.Empty;
-            var keyBits = new BitArray(key);
-            var toCipher = new BitArray(cipher);
+            var keyBits = new BitArray(key.StringToByteArray());
+            var toCipher = new BitArray(Plaintext.StringToByteArray());
             BitArray switchTemp;
             builder.AppendFormat("Transformed {0} text to {1} {2}", Ciphertext, toCipher.Print(), Environment.NewLine);
             builder.AppendFormat("Using key {0} with bits {1} {2}", key, keyBits.Print(), Environment.NewLine);
@@ -191,6 +192,7 @@ namespace DES.Model
             toCipher = InverseInitialPermutation(left.Concat(right));
             builder.AppendFormat("Inverse permutation result {0}{1}", toCipher.Print(), Environment.NewLine);
             Work = builder.ToString();
+            Ciphertext = toCipher.ToByteArray().ByteArrayToStringValue();
             return toCipher.ToByteArray();
         }
 

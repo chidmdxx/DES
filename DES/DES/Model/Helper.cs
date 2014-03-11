@@ -118,5 +118,29 @@ namespace DES.Model
             }
             return toReturn;
         }
+
+        public static byte[] StringToByteArray(this string hex)
+        {
+            int NumberChars = hex.Length;
+            byte[] bytes = new byte[NumberChars / 2];
+            for (int i = 0; i < NumberChars; i += 2)
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            return bytes;
+        }
+
+        public static string ByteArrayToStringValue(this byte[] bytes)
+        {
+            string hex = BitConverter.ToString(bytes);
+            return hex.Replace("-", "");
+        }
+        public static string ByteArrayToString(this byte[] bytes)
+        {
+            var builder = new StringBuilder();
+            foreach (var b in bytes)
+            {
+                builder.Append((char)b);
+            }
+            return builder.ToString();
+        }
     }
 }
