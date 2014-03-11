@@ -48,6 +48,7 @@ namespace DES.Model
             var keyBits = new BitArray(keyBytes);
             var toCipherBytes = Encoding.UTF8.GetBytes(Ciphertext);
             var toCipher = new BitArray(toCipherBytes);
+            BitArray switchTemp;
             builder.AppendFormat("Transformed {0} text to {1} {2}", Ciphertext, toCipher.Print(), Environment.NewLine);
             builder.AppendFormat("Using key {0} with bits {1} {2}", key, keyBits.Print(), Environment.NewLine);
             toCipher = InitialPermutation(toCipher);
@@ -80,9 +81,38 @@ namespace DES.Model
 
             for (var i = 1; i <= rounds; i++)
             {
+                c = KeyLeftShift(c, i);
+                d = KeyLeftShift(d, i);
+                builder.AppendFormat("c{0} {1}{2}", i, c.Print(), Environment.NewLine);
+                builder.AppendFormat("d{0} {1}{2}", i, d.Print(), Environment.NewLine);
                 var expansionList = ExpansionPermutation(right);
+                var k = PermutedChoiceTwoListing(c, d);
+                var permutation = new BitArray(0);
+                for (var j = 1; j <= 8; j++) //xor y sboxes
+                {
+                    var xor = expansionList[i - 1].Xor(k[i - 1]);
+                    builder.AppendFormat("{0} xor {1} = {2} {3}", expansionList[i - 1].Print(), k[i - 1].Print(), xor.Print(), Environment.NewLine);
+                    var sbox = SBoxSelector(xor, j);
+                    builder.AppendFormat("{0} sbox{1} result {2}{3}", xor.Print(), j, sbox.Print(), Environment.NewLine);
+                    permutation = permutation.Concat(sbox);
+                }
+                builder.AppendFormat("Prepermutation {0} {1}", permutation.Print(), Environment.NewLine);
+                permutation = Permutation(permutation);
+                builder.AppendFormat("Permutation {0} {1}", permutation.Print(), Environment.NewLine);
+                switchTemp = new BitArray(right); //para hacer el cambio de valores
+                right = permutation.Xor(left);
+                left = new BitArray(switchTemp);
+                builder.AppendFormat("Left{0} {1}{2}", i, left.Print(), Environment.NewLine);
+                builder.AppendFormat("Right{0} {1}{2}", i, right.Print(), Environment.NewLine);
             }
-
+            switchTemp = new BitArray(right); //para hacer el cambio de valores
+            right = new BitArray(left);
+            left = new BitArray(switchTemp);
+            builder.AppendFormat("Left{0} {1}{2}", " Final", left.Print(), Environment.NewLine);
+            builder.AppendFormat("Right{0} {1}{2}", " Final", right.Print(), Environment.NewLine);
+            toCipher = InverseInitialPermutation(left.Concat(right));
+            builder.AppendFormat("Inverse permutation result {0}{1}", toCipher.Print(), Environment.NewLine);
+            Work = builder.ToString();
             return toCipher.ToByteArray();
         }
 
@@ -333,6 +363,50 @@ namespace DES.Model
                 case 8: return Sbox8(bits);
                 default: return null;
             }
+        }
+
+        private BitArray Permutation(BitArray bits)
+        {
+            if (bits.Length != 32)
+            {
+                return null;
+            }
+            var toReturn = new BitArray(32);
+            #region asignaciones de los valores
+            toReturn.Bit(1, bits.Bit(16));
+            toReturn.Bit(2, bits.Bit(7));
+            toReturn.Bit(3, bits.Bit(20));
+            toReturn.Bit(4, bits.Bit(21));
+            toReturn.Bit(5, bits.Bit(29));
+            toReturn.Bit(6, bits.Bit(12));
+            toReturn.Bit(7, bits.Bit(28));
+            toReturn.Bit(8, bits.Bit(17));
+            toReturn.Bit(9, bits.Bit(1));
+            toReturn.Bit(10, bits.Bit(15));
+            toReturn.Bit(11, bits.Bit(23));
+            toReturn.Bit(12, bits.Bit(26));
+            toReturn.Bit(13, bits.Bit(5));
+            toReturn.Bit(14, bits.Bit(18));
+            toReturn.Bit(15, bits.Bit(31));
+            toReturn.Bit(16, bits.Bit(10));
+            toReturn.Bit(17, bits.Bit(2));
+            toReturn.Bit(18, bits.Bit(8));
+            toReturn.Bit(19, bits.Bit(24));
+            toReturn.Bit(20, bits.Bit(14));
+            toReturn.Bit(21, bits.Bit(32));
+            toReturn.Bit(22, bits.Bit(27));
+            toReturn.Bit(23, bits.Bit(3));
+            toReturn.Bit(24, bits.Bit(9));
+            toReturn.Bit(25, bits.Bit(19));
+            toReturn.Bit(26, bits.Bit(13));
+            toReturn.Bit(27, bits.Bit(30));
+            toReturn.Bit(28, bits.Bit(6));
+            toReturn.Bit(29, bits.Bit(22));
+            toReturn.Bit(30, bits.Bit(11));
+            toReturn.Bit(31, bits.Bit(4));
+            toReturn.Bit(32, bits.Bit(25));
+            #endregion
+            return toReturn;
         }
 
         private BitArray PermutedChoiceOne(BitArray bits)
