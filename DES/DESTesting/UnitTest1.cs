@@ -18,7 +18,6 @@ namespace DESTesting
             test.CipherHex(16);
 
             Assert.AreEqual("85E813540F0AB405", test.Ciphertext, true);
-            int a = 0;
         }
     }
 }

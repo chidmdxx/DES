@@ -25,12 +25,15 @@ namespace DES.Model
             if (bits.Count % 8 != 0) numBytes++; //evita que sea divisible entre 0
 
             byte[] bytes = new byte[numBytes];
-            int byteIndex = 0, bitIndex = 0;
+            int byteIndex = 0;
+            int bitIndex = 0;
 
             for (var i = (bits.Length - 1); i >= 0; i--)
             {
                 if (bits[i])
+                {
                     bytes[byteIndex] |= (byte)(1 << (7 - bitIndex)); //arma los bytes
+                }
 
                 bitIndex++;
                 if (bitIndex == 8)
