@@ -65,8 +65,8 @@ namespace DES.Model
             var keyBits = new BitArray(key.Reverse().ToArray());
             var plainBits = new BitArray(message.Reverse().ToArray());
             BitArray switchTemp;
-            builder.AppendFormat("Transformed {0} text to {1} {2}", Ciphertext, plainBits.Print(), Environment.NewLine);
-            builder.AppendFormat("Using key {0} with bits {1} {2}", key, keyBits.Print(), Environment.NewLine);
+            builder.AppendFormat("Transformed {0} text to {1} {2}", Plaintext, plainBits.Print(), Environment.NewLine);
+            builder.AppendFormat("Using key {0} with bits {1} {2}", key.ByteArrayToStringValue(), keyBits.Print(), Environment.NewLine);
             plainBits = InitialPermutation(plainBits);
             builder.AppendFormat("Initial permutation result {0}{1}", plainBits.Print(), Environment.NewLine);
             keyBits = PermutedChoiceOne(keyBits);
@@ -102,11 +102,11 @@ namespace DES.Model
                 builder.AppendFormat("c{0} {1}{2}", i, c.Print(), Environment.NewLine);
                 builder.AppendFormat("d{0} {1}{2}", i, d.Print(), Environment.NewLine);
                 var expansion = ExpansionPermutation(right);
-                builder.AppendFormat("Expansion permutation {0}{1}", expansion.Print(), Environment.NewLine);
+                builder.AppendFormat("Expansion permutation {0}{1}", expansion.Print(6), Environment.NewLine);
                 var k = PermutedChoiceTwo(c.Concat(d));
-                builder.AppendFormat("K{0} {1}{2}", i, k.Print(), Environment.NewLine);
+                builder.AppendFormat("K{0} {1}{2}", i, k.Print(6), Environment.NewLine);
                 var xor = expansion.Xor(k);
-                builder.AppendFormat("XOR result {0}{1}", xor.Print(), Environment.NewLine);
+                builder.AppendFormat("XOR result {0}{1}", xor.Print(6), Environment.NewLine);
                 var permutation = new BitArray(0);
                 for (var j = 0; j < 8; j++) //xor y sboxes, el 0 facilita las operaciones para separar en 6
                 {
@@ -118,7 +118,7 @@ namespace DES.Model
                     temp.Bit(5, xor.Bit((j * 6) + 5));
                     temp.Bit(6, xor.Bit((j * 6) + 6));
                     var sbox = SBoxSelector(temp, j + 1);
-                    builder.AppendFormat("{0} sbox{1} result {2}{3}", temp.Print(), (j + 1), sbox.Print(), Environment.NewLine);
+                    builder.AppendFormat("{0} sbox{1} result {2}{3}", temp.Print(6), (j + 1), sbox.Print(), Environment.NewLine);
                     permutation = permutation.Concat(sbox);
                 }
                 builder.AppendFormat("Prepermutation {0} {1}", permutation.Print(), Environment.NewLine);

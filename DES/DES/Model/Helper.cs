@@ -77,39 +77,22 @@ namespace DES.Model
             return toReturn;
         }
 
-        public static string Print(this BitArray bits, int rows = 0)
+        public static string Print(this BitArray bits, int group = 4)
         {
             var builder = new StringBuilder();
             string append;
-            if (rows == 0)
-            {
+            
                 for (var i = 1; i <= bits.Length; i++)
                 {
                     append = bits.Bit(i) ? "1" : "0"; //imprime 0 y 1 y no true y false
                     builder.AppendFormat("{0}", append);
-                    if (i % 4 == 0)
+                    if (i % group == 0)
                     {
                         builder.Append(" ");
                     }
                 }
-            }
-            else
-            {
-                int column = bits.Length / rows;
-                for (var i = 0; i < rows; i++)
-                {
-                    for (var j = 1; j <= column; j++)
-                    {
-                        append = bits.Bit((i * column) + j) ? "1" : "0";
-                        builder.AppendFormat("{0}", append);
-                        if (i % 4 == 0)
-                        {
-                            builder.Append(" ");
-                        }
-                    }
-                    builder.Append(Environment.NewLine);
-                }
-            }
+            
+            
             return builder.ToString();
         }
 
