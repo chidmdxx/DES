@@ -9,7 +9,7 @@ namespace DES.Model
 {
     static class Helper
     {
-        public static bool Bit (this BitArray bits, int index) //hace que la little endian class de BitArray se lea como big endian
+        public static bool Bit(this BitArray bits, int index) //hace que la little endian class de BitArray se lea como big endian
         {
             return bits[bits.Length - index];
         }
@@ -56,7 +56,7 @@ namespace DES.Model
         public static void ShiftLeft(this BitArray bits)
         {
             bool first = bits.Bit(1); //guardar el primero
-            for (var i=2;i<=bits.Length;i++)
+            for (var i = 2; i <= bits.Length; i++)
             {
                 bits[i - 1] = bits[i];
             }
@@ -65,13 +65,41 @@ namespace DES.Model
 
         public static BitArray GetInnerBits(this BitArray bits)
         {
-            BitArray toReturn=new BitArray(bits);
-            for (var i=1;i<bits.Length;i++)
+            BitArray toReturn = new BitArray(bits);
+            for (var i = 1; i < bits.Length; i++)
             {
                 toReturn[i - 1] = toReturn[i];
             }
             toReturn.Length = toReturn.Length - 2;
             return toReturn;
+        }
+
+        public static string Print(this BitArray bits, int rows = 0)
+        {
+            var builder = new StringBuilder();
+            string append;
+            if (rows == 0)
+            {
+                for (var i = 1; i <= bits.Length; i++)
+                {
+                    append = bits.Bit(i) ? "1" : "0"; //imprime 0 y 1 y no true y false
+                    builder.AppendFormat(" {0} ", append);
+                }
+            }
+            else
+            {
+                int column = bits.Length / rows;
+                for (var i = 0; i < rows; i++)
+                {
+                    for (var j = 1; j <= column; j++)
+                    {
+                        append = bits.Bit((i * column) + j ) ? "1" : "0";
+                        builder.AppendFormat(" {0} ", append);
+                    }
+                    builder.Append(Environment.NewLine);
+                }
+            }
+            return builder.ToString();
         }
     }
 }

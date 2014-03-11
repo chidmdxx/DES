@@ -36,6 +36,13 @@ namespace DES.Model
 
         }
 
+        public byte[] Cipher(int rounds=5)
+        {
+            var builder = new StringBuilder();
+            Ciphertext = string.Empty;
+
+        }
+
         private BitArray InitialPermutation(BitArray bits)
         {
             if (bits.Length != 64)
