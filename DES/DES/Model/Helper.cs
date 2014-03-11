@@ -27,7 +27,7 @@ namespace DES.Model
             byte[] bytes = new byte[numBytes];
             int byteIndex = 0, bitIndex = 0;
 
-            for (int i = 0; i < bits.Count; i++)
+            for (var i = (bits.Length - 1); i >= 0; i--)
             {
                 if (bits[i])
                     bytes[byteIndex] |= (byte)(1 << (7 - bitIndex)); //arma los bytes
@@ -84,7 +84,7 @@ namespace DES.Model
                 {
                     append = bits.Bit(i) ? "1" : "0"; //imprime 0 y 1 y no true y false
                     builder.AppendFormat("{0}", append);
-                    if(i%4==0)
+                    if (i % 4 == 0)
                     {
                         builder.Append(" ");
                     }

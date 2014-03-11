@@ -44,17 +44,17 @@ namespace DES.Model
 
         public string CipherHex(int rounds = 5)
         {
-            Ciphertext = Cipher(Plaintext.StringToByteArray(), Key.StringToByteArray(), rounds).ByteArrayToString();
+            Ciphertext = Cipher(Plaintext.StringToByteArray(), Key.StringToByteArray(), rounds).ToByteArray().ByteArrayToStringValue();
             return Ciphertext;
         }
 
         public string CipherString(int rounds = 5)
         {
-            Ciphertext = Cipher(Encoding.UTF8.GetBytes(Plaintext), Key.StringToByteArray(), rounds).ByteArrayToStringValue();
+            Ciphertext = Cipher(Encoding.UTF8.GetBytes(Plaintext), Key.StringToByteArray(), rounds).ToByteArray().ByteArrayToString();
             return Ciphertext;
         }
 
-        private byte[] Cipher(byte[] message, byte[] key, int rounds)
+        private BitArray Cipher(byte[] message, byte[] key, int rounds)
         {
             var builder = new StringBuilder();
             var left = new BitArray(32);
@@ -138,7 +138,7 @@ namespace DES.Model
             toCipher = InverseInitialPermutation(left.Concat(right));
             builder.AppendFormat("Inverse permutation result {0}{1}", toCipher.Print(), Environment.NewLine);
             Work = builder.ToString();
-            return toCipher.ToByteArray();
+            return toCipher;
         }
 
         private BitArray InitialPermutation(BitArray bits)
