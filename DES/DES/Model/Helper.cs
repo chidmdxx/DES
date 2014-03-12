@@ -61,9 +61,19 @@ namespace DES.Model
             bool first = bits.Bit(1); //guardar el primero
             for (var i = 2; i <= bits.Length; i++)
             {
-                bits.Bit(i - 1, bits.Bit(i));
+                bits.Bit(i - 1, bits.Bit(i)); //recorre a la izquierda
             }
             bits.Bit(bits.Length, first);
+        }
+
+        public static void ShiftRight(this BitArray bits)
+        {
+            bool last = bits.Bit(bits.Length); //guardar el ultimo
+            for (var i = 1; i < bits.Length; i++)
+            {
+                bits.Bit(i + 1, bits.Bit(i)); //recorre a la derecha
+            }
+            bits.Bit(1, last);
         }
 
         public static BitArray GetInnerBits(this BitArray bits)

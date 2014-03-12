@@ -141,6 +141,101 @@ namespace DES.Model
             return plainBits;
         }
 
+        private BitArray Decipher(byte[] message, byte[] key, int rounds)
+        {
+            var builder = new StringBuilder();
+            var left = new BitArray(32);
+            var right = new BitArray(32);
+            var c = new BitArray(28);
+            var d = new BitArray(28);
+            Plaintext = string.Empty;
+            var keyBits = new BitArray(key.Reverse().ToArray());
+            var cipherbits = new BitArray(message.Reverse().ToArray());
+            BitArray switchTemp;
+            builder.AppendFormat("Transformed {0} text to {1} {2}", Plaintext, cipherbits.Print(), Environment.NewLine);
+            builder.AppendFormat("Using key {0} with bits {1} {2}", key.ByteArrayToStringValue(), keyBits.Print(), Environment.NewLine);
+            cipherbits = InverseInitialPermutation(cipherbits);
+            builder.AppendFormat("Inverse initial permutation result {0}{1}", cipherbits.Print(), Environment.NewLine);
+            keyBits = PermutedChoiceOne(keyBits);
+            builder.AppendFormat("Permuted choice one {0}{1}", keyBits.Print(), Environment.NewLine);
+            for (var i = 1; i <= 64; i++) //copiar los arreglos de bit a los nuevos Array.Copy no sirve con BitArray
+            {
+                if (i <= 32)
+                {
+                    left.Bit(i, cipherbits.Bit(i));
+                }
+                else
+                {
+                    right.Bit(i - 32, cipherbits.Bit(i));
+                }
+                if (i <= 28)
+                {
+                    c.Bit(i, keyBits.Bit(i));
+                }
+                else if (i <= 56)
+                {
+                    d.Bit(i - 28, keyBits.Bit(i));
+                }
+            }
+            c = AllKeyShifts(c, rounds);
+            d = AllKeyShifts(d, rounds);
+            builder.AppendFormat("Left {0}{1}", left.Print(), Environment.NewLine);
+            builder.AppendFormat("Right {0}{1}", right.Print(), Environment.NewLine);
+            switchTemp = right; //para hacer el cambio de valores
+            right = left;
+            left = switchTemp;
+            builder.AppendFormat("Left {0}{1}", left.Print(), Environment.NewLine);
+            builder.AppendFormat("Right {0}{1}", right.Print(), Environment.NewLine);
+            builder.AppendFormat("c{0} {1}{2}", rounds, c.Print(), Environment.NewLine);
+            builder.AppendFormat("d{0} {1}{2}", rounds, d.Print(), Environment.NewLine);
+
+            for (var i = rounds; i > 0; i++)
+            {
+                c = KeyRightShift(c, i);
+                d = KeyRightShift(d, i);
+                builder.AppendFormat("c{0} {1}{2}", i, c.Print(), Environment.NewLine);
+                builder.AppendFormat("d{0} {1}{2}", i, d.Print(), Environment.NewLine);
+
+
+
+                var expansion = ExpansionPermutation(right);
+                builder.AppendFormat("Expansion permutation {0}{1}", expansion.Print(6), Environment.NewLine);
+                var k = PermutedChoiceTwo(c.Concat(d));
+                builder.AppendFormat("K{0} {1}{2}", i, k.Print(6), Environment.NewLine);
+                var xor = expansion.Xor(k);
+                builder.AppendFormat("XOR result {0}{1}", xor.Print(6), Environment.NewLine);
+                var permutation = new BitArray(0);
+                for (var j = 0; j < 8; j++) //xor y sboxes, el 0 facilita las operaciones para separar en 6
+                {
+                    var temp = new BitArray(6);
+                    temp.Bit(1, xor.Bit((j * 6) + 1));
+                    temp.Bit(2, xor.Bit((j * 6) + 2));
+                    temp.Bit(3, xor.Bit((j * 6) + 3));
+                    temp.Bit(4, xor.Bit((j * 6) + 4));
+                    temp.Bit(5, xor.Bit((j * 6) + 5));
+                    temp.Bit(6, xor.Bit((j * 6) + 6));
+                    var sbox = SBoxSelector(temp, j + 1);
+                    builder.AppendFormat("{0} sbox{1} result {2}{3}", temp.Print(6), (j + 1), sbox.Print(), Environment.NewLine);
+                    permutation = permutation.Concat(sbox);
+                }
+                builder.AppendFormat("Prepermutation {0} {1}", permutation.Print(), Environment.NewLine);
+                permutation = Permutation(permutation);
+                builder.AppendFormat("Permutation {0} {1}", permutation.Print(), Environment.NewLine);
+                switchTemp = right; //para hacer el cambio de valores
+                right = permutation.Xor(left);
+                left = switchTemp;
+                builder.AppendFormat("Left{0} {1}{2}", i, left.Print(), Environment.NewLine);
+                builder.AppendFormat("Right{0} {1}{2}", i, right.Print(), Environment.NewLine);
+            }
+            
+            builder.AppendFormat("Left{0} {1}{2}", " Final", left.Print(), Environment.NewLine);
+            builder.AppendFormat("Right{0} {1}{2}", " Final", right.Print(), Environment.NewLine);
+            cipherbits = InverseInitialPermutation(left.Concat(right));
+            builder.AppendFormat("Inverse permutation result {0}{1}", cipherbits.Print(), Environment.NewLine);
+            Work = builder.ToString();
+            return cipherbits;
+        }
+
         private BitArray InitialPermutation(BitArray bits)
         {
             if (bits.Length != 64)
@@ -374,6 +469,60 @@ namespace DES.Model
             return key;
         }
 
+        private BitArray KeyRightShift(BitArray key, int round)
+        {
+            switch (round)
+            {
+                case 1: key.ShiftRight();
+                    break;
+                case 2: key.ShiftRight();
+                    break;
+                case 3: key.ShiftRight();
+                    key.ShiftRight();
+                    break;
+                case 4: key.ShiftRight();
+                    key.ShiftRight();
+                    break;
+                case 5: key.ShiftRight();
+                    key.ShiftRight();
+                    break;
+                case 6: key.ShiftRight();
+                    key.ShiftRight();
+                    break;
+                case 7: key.ShiftRight();
+                    key.ShiftRight();
+                    break;
+                case 8: key.ShiftRight();
+                    key.ShiftRight();
+                    break;
+                case 9: key.ShiftRight();
+                    break;
+                case 10: key.ShiftRight();
+                    key.ShiftRight();
+                    break;
+                case 11: key.ShiftRight();
+                    key.ShiftRight();
+                    break;
+                case 12: key.ShiftRight();
+                    key.ShiftRight();
+                    break;
+                case 13: key.ShiftRight();
+                    key.ShiftRight();
+                    break;
+                case 14: key.ShiftRight();
+                    key.ShiftRight();
+                    break;
+                case 15: key.ShiftRight();
+                    key.ShiftRight();
+                    break;
+                case 16: key.ShiftRight();
+                    break;
+                default: break;
+            }
+
+            return key;
+        }
+
         private BitArray SBoxSelector(BitArray bits, int number)
         {
             switch (number)
@@ -564,7 +713,14 @@ namespace DES.Model
             return toReturn;
         }
 
-
+        private BitArray AllKeyShifts(BitArray bits, int rounds)
+        {
+            for (var i = 1; i <= rounds; i++)
+            {
+                bits = KeyLeftShift(bits, i);
+            }
+            return bits;
+        }
 
         #region SBox methods
         private BitArray Sbox1(BitArray bits)
