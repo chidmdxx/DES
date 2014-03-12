@@ -140,7 +140,17 @@ namespace DES.Model
             Work = builder.ToString();
             return plainBits;
         }
+        public string DecipherHex(int rounds = 5)
+        {
+            Plaintext = Decipher(Ciphertext.StringToByteArray(), Key.StringToByteArray(), rounds).ToByteArray().ByteArrayToStringValue();
+            return Plaintext;
+        }
 
+        public string DecipherString(int rounds = 5)
+        {
+            Plaintext = Decipher(Encoding.UTF8.GetBytes(Ciphertext), Key.StringToByteArray(), rounds).ToByteArray().ByteArrayToString();
+            return Plaintext;
+        }
         private BitArray Decipher(byte[] message, byte[] key, int rounds)
         {
             var builder = new StringBuilder();
@@ -154,8 +164,8 @@ namespace DES.Model
             BitArray switchTemp;
             builder.AppendFormat("Transformed {0} text to {1} {2}", Plaintext, cipherbits.Print(), Environment.NewLine);
             builder.AppendFormat("Using key {0} with bits {1} {2}", key.ByteArrayToStringValue(), keyBits.Print(), Environment.NewLine);
-            cipherbits = InverseInitialPermutation(cipherbits);
-            builder.AppendFormat("Inverse initial permutation result {0}{1}", cipherbits.Print(), Environment.NewLine);
+            cipherbits = InitialPermutation(cipherbits);
+            builder.AppendFormat("Initial permutation result {0}{1}", cipherbits.Print(), Environment.NewLine);
             keyBits = PermutedChoiceOne(keyBits);
             builder.AppendFormat("Permuted choice one {0}{1}", keyBits.Print(), Environment.NewLine);
             for (var i = 1; i <= 64; i++) //copiar los arreglos de bit a los nuevos Array.Copy no sirve con BitArray
@@ -177,26 +187,32 @@ namespace DES.Model
                     d.Bit(i - 28, keyBits.Bit(i));
                 }
             }
-            c = AllKeyShifts(c, rounds);
-            d = AllKeyShifts(d, rounds);
+            //c = AllKeyShifts(c, rounds);
+            //d = AllKeyShifts(d, rounds);
             builder.AppendFormat("Left {0}{1}", left.Print(), Environment.NewLine);
             builder.AppendFormat("Right {0}{1}", right.Print(), Environment.NewLine);
-            switchTemp = right; //para hacer el cambio de valores
+            switchTemp = right; //para hacer el cambio de valores del final
             right = left;
             left = switchTemp;
             builder.AppendFormat("Left {0}{1}", left.Print(), Environment.NewLine);
             builder.AppendFormat("Right {0}{1}", right.Print(), Environment.NewLine);
-            builder.AppendFormat("c{0} {1}{2}", rounds, c.Print(), Environment.NewLine);
-            builder.AppendFormat("d{0} {1}{2}", rounds, d.Print(), Environment.NewLine);
+            //builder.AppendFormat("c{0} {1}{2}", rounds, c.Print(), Environment.NewLine);
+            //builder.AppendFormat("d{0} {1}{2}", rounds, d.Print(), Environment.NewLine);
 
-            for (var i = rounds; i > 0; i++)
+            for (var i = rounds; i > 0; i--)
             {
-                c = KeyRightShift(c, i);
-                d = KeyRightShift(d, i);
+                //if (i != rounds) //empieza con las c y d finales
+                //{
+                //    c = KeyRightShift(c, i);
+                //    d = KeyRightShift(d, i);
+                //    builder.AppendFormat("c{0} {1}{2}", i, c.Print(), Environment.NewLine);
+                //    builder.AppendFormat("d{0} {1}{2}", i, d.Print(), Environment.NewLine);
+                //}
+                c = AllKeyShifts(c, i);
+                d = AllKeyShifts(d, i);
                 builder.AppendFormat("c{0} {1}{2}", i, c.Print(), Environment.NewLine);
                 builder.AppendFormat("d{0} {1}{2}", i, d.Print(), Environment.NewLine);
-
-
+                right = left;
 
                 var expansion = ExpansionPermutation(right);
                 builder.AppendFormat("Expansion permutation {0}{1}", expansion.Print(6), Environment.NewLine);
@@ -221,15 +237,16 @@ namespace DES.Model
                 builder.AppendFormat("Prepermutation {0} {1}", permutation.Print(), Environment.NewLine);
                 permutation = Permutation(permutation);
                 builder.AppendFormat("Permutation {0} {1}", permutation.Print(), Environment.NewLine);
-                switchTemp = right; //para hacer el cambio de valores
-                right = permutation.Xor(left);
-                left = switchTemp;
-                builder.AppendFormat("Left{0} {1}{2}", i, left.Print(), Environment.NewLine);
-                builder.AppendFormat("Right{0} {1}{2}", i, right.Print(), Environment.NewLine);
+
+                left = permutation.Xor(right);
+                
+
+                builder.AppendFormat("Left{0} {1}{2}", (i-1), left.Print(), Environment.NewLine);
+                builder.AppendFormat("Right{0} {1}{2}", (i-1), right.Print(), Environment.NewLine);
             }
             
-            builder.AppendFormat("Left{0} {1}{2}", " Final", left.Print(), Environment.NewLine);
-            builder.AppendFormat("Right{0} {1}{2}", " Final", right.Print(), Environment.NewLine);
+            builder.AppendFormat("Left{0} {1}{2}", " Beginning", left.Print(), Environment.NewLine);
+            builder.AppendFormat("Right{0} {1}{2}", " Beginning", right.Print(), Environment.NewLine);
             cipherbits = InverseInitialPermutation(left.Concat(right));
             builder.AppendFormat("Inverse permutation result {0}{1}", cipherbits.Print(), Environment.NewLine);
             Work = builder.ToString();
