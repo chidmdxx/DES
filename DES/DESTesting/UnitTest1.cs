@@ -36,8 +36,19 @@ namespace DESTesting
         [TestMethod]
         public void AllAroundHexTest()
         {
-            string M = "BEBEBABADAD0DED0";
-            string key = "256AB3589F0831CA";
+            string M = "";
+            string key = "";
+            char[] possible = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+            Random random = new Random();
+
+            int posicion;
+            for (var j = 0; j < 16; j++)
+            {
+                posicion = random.Next(16);
+                M += possible[posicion];
+                posicion = random.Next(16);
+                key += possible[posicion];
+            }
             var cipher = new DESClass();
             cipher.Plaintext = M;
             cipher.Key = key;
