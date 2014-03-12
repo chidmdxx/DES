@@ -156,13 +156,13 @@ namespace DES.Model
             var builder = new StringBuilder();
             var left = new BitArray(32);
             var right = new BitArray(32);
-            var c = new BitArray(28);
-            var d = new BitArray(28);
+            var cOriginal = new BitArray(28);
+            var dOriginal = new BitArray(28);
             Plaintext = string.Empty;
             var keyBits = new BitArray(key.Reverse().ToArray());
             var cipherbits = new BitArray(message.Reverse().ToArray());
             BitArray switchTemp;
-            builder.AppendFormat("Transformed {0} text to {1} {2}", Plaintext, cipherbits.Print(), Environment.NewLine);
+            builder.AppendFormat("Transformed {0} text to {1} {2}", Ciphertext, cipherbits.Print(), Environment.NewLine);
             builder.AppendFormat("Using key {0} with bits {1} {2}", key.ByteArrayToStringValue(), keyBits.Print(), Environment.NewLine);
             cipherbits = InitialPermutation(cipherbits);
             builder.AppendFormat("Initial permutation result {0}{1}", cipherbits.Print(), Environment.NewLine);
@@ -180,11 +180,11 @@ namespace DES.Model
                 }
                 if (i <= 28)
                 {
-                    c.Bit(i, keyBits.Bit(i));
+                    cOriginal.Bit(i, keyBits.Bit(i));
                 }
                 else if (i <= 56)
                 {
-                    d.Bit(i - 28, keyBits.Bit(i));
+                    dOriginal.Bit(i - 28, keyBits.Bit(i));
                 }
             }
             //c = AllKeyShifts(c, rounds);
@@ -208,10 +208,11 @@ namespace DES.Model
                 //    builder.AppendFormat("c{0} {1}{2}", i, c.Print(), Environment.NewLine);
                 //    builder.AppendFormat("d{0} {1}{2}", i, d.Print(), Environment.NewLine);
                 //}
-                c = AllKeyShifts(c, i);
-                d = AllKeyShifts(d, i);
+                var c = AllKeyShifts(cOriginal, i);
+                var d = AllKeyShifts(dOriginal, i);
                 builder.AppendFormat("c{0} {1}{2}", i, c.Print(), Environment.NewLine);
                 builder.AppendFormat("d{0} {1}{2}", i, d.Print(), Environment.NewLine);
+                switchTemp = right;
                 right = left;
 
                 var expansion = ExpansionPermutation(right);
@@ -238,13 +239,13 @@ namespace DES.Model
                 permutation = Permutation(permutation);
                 builder.AppendFormat("Permutation {0} {1}", permutation.Print(), Environment.NewLine);
 
-                left = permutation.Xor(right);
-                
+                left = permutation.Xor(switchTemp);
 
-                builder.AppendFormat("Left{0} {1}{2}", (i-1), left.Print(), Environment.NewLine);
-                builder.AppendFormat("Right{0} {1}{2}", (i-1), right.Print(), Environment.NewLine);
+
+                builder.AppendFormat("Left{0} {1}{2}", (i - 1), left.Print(), Environment.NewLine);
+                builder.AppendFormat("Right{0} {1}{2}", (i - 1), right.Print(), Environment.NewLine);
             }
-            
+
             builder.AppendFormat("Left{0} {1}{2}", " Beginning", left.Print(), Environment.NewLine);
             builder.AppendFormat("Right{0} {1}{2}", " Beginning", right.Print(), Environment.NewLine);
             cipherbits = InverseInitialPermutation(left.Concat(right));
@@ -732,11 +733,12 @@ namespace DES.Model
 
         private BitArray AllKeyShifts(BitArray bits, int rounds)
         {
+            var toReturn = new BitArray(bits);
             for (var i = 1; i <= rounds; i++)
             {
-                bits = KeyLeftShift(bits, i);
+                toReturn = KeyLeftShift(toReturn, i);
             }
-            return bits;
+            return toReturn;
         }
 
         #region SBox methods
