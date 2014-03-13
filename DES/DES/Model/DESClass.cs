@@ -50,7 +50,7 @@ namespace DES.Model
 
         public string CipherString(int rounds = 5)
         {
-            Ciphertext = Cipher(Encoding.UTF8.GetBytes(Plaintext), Key.StringToByteArray(), rounds).ToByteArray().ByteArrayToString();
+            Ciphertext = Cipher(Encoding.UTF8.GetBytes(Plaintext), Key.StringToByteArray(), rounds).ToByteArray().ByteArrayToStringValue();
             return Ciphertext;
         }
 
@@ -94,9 +94,10 @@ namespace DES.Model
             builder.AppendFormat("Right {0}{1}", right.Print(), Environment.NewLine);
             builder.AppendFormat("c0 {0}{1}", c.Print(), Environment.NewLine);
             builder.AppendFormat("d0 {0}{1}", d.Print(), Environment.NewLine);
-
+            builder.Append(Environment.NewLine);
             for (var i = 1; i <= rounds; i++)
             {
+                builder.AppendFormat("Round {0}{1}", i, Environment.NewLine);
                 c = KeyLeftShift(c, i);
                 d = KeyLeftShift(d, i);
                 builder.AppendFormat("c{0} {1}{2}", i, c.Print(), Environment.NewLine);
@@ -129,6 +130,7 @@ namespace DES.Model
                 left = switchTemp;
                 builder.AppendFormat("Left{0} {1}{2}", i, left.Print(), Environment.NewLine);
                 builder.AppendFormat("Right{0} {1}{2}", i, right.Print(), Environment.NewLine);
+                builder.Append(Environment.NewLine);
             }
             switchTemp = right; //para hacer el cambio de valores
             right = left;
@@ -148,7 +150,7 @@ namespace DES.Model
 
         public string DecipherString(int rounds = 5)
         {
-            Plaintext = Decipher(Encoding.UTF8.GetBytes(Ciphertext), Key.StringToByteArray(), rounds).ToByteArray().ByteArrayToString();
+            Plaintext = Decipher(Ciphertext.StringToByteArray(), Key.StringToByteArray(), rounds).ToByteArray().ByteArrayToString();
             return Plaintext;
         }
         private BitArray Decipher(byte[] message, byte[] key, int rounds)
@@ -198,7 +200,7 @@ namespace DES.Model
             builder.AppendFormat("Right {0}{1}", right.Print(), Environment.NewLine);
             //builder.AppendFormat("c{0} {1}{2}", rounds, c.Print(), Environment.NewLine);
             //builder.AppendFormat("d{0} {1}{2}", rounds, d.Print(), Environment.NewLine);
-
+            builder.Append(Environment.NewLine);
             for (var i = rounds; i > 0; i--)
             {
                 //if (i != rounds) //empieza con las c y d finales
@@ -208,6 +210,7 @@ namespace DES.Model
                 //    builder.AppendFormat("c{0} {1}{2}", i, c.Print(), Environment.NewLine);
                 //    builder.AppendFormat("d{0} {1}{2}", i, d.Print(), Environment.NewLine);
                 //}
+                builder.AppendFormat("Round {0}{1}", i, Environment.NewLine);
                 var c = AllKeyShifts(cOriginal, i);
                 var d = AllKeyShifts(dOriginal, i);
                 builder.AppendFormat("c{0} {1}{2}", i, c.Print(), Environment.NewLine);
@@ -244,6 +247,7 @@ namespace DES.Model
 
                 builder.AppendFormat("Left{0} {1}{2}", (i - 1), left.Print(), Environment.NewLine);
                 builder.AppendFormat("Right{0} {1}{2}", (i - 1), right.Print(), Environment.NewLine);
+                builder.Append(Environment.NewLine);
             }
 
             builder.AppendFormat("Left{0} {1}{2}", " Beginning", left.Print(), Environment.NewLine);
