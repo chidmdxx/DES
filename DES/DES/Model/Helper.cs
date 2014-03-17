@@ -69,9 +69,9 @@ namespace DES.Model
         public static void ShiftRight(this BitArray bits)
         {
             bool last = bits.Bit(bits.Length); //guardar el ultimo
-            for (var i = 1; i < bits.Length; i++)
+            for (var i = bits.Length; i > 1; i--)
             {
-                bits.Bit(i + 1, bits.Bit(i)); //recorre a la derecha
+                bits.Bit(i, bits.Bit(i-1)); //recorre a la derecha
             }
             bits.Bit(1, last);
         }

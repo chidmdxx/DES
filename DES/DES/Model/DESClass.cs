@@ -158,8 +158,9 @@ namespace DES.Model
             var builder = new StringBuilder();
             var left = new BitArray(32);
             var right = new BitArray(32);
-            var cOriginal = new BitArray(28);
-            var dOriginal = new BitArray(28);
+            var c = new BitArray(28);
+            var d = new BitArray(28);
+
             Plaintext = string.Empty;
             var keyBits = new BitArray(key.Reverse().ToArray());
             var cipherbits = new BitArray(message.Reverse().ToArray());
@@ -182,15 +183,15 @@ namespace DES.Model
                 }
                 if (i <= 28)
                 {
-                    cOriginal.Bit(i, keyBits.Bit(i));
+                    c.Bit(i, keyBits.Bit(i));
                 }
                 else if (i <= 56)
                 {
-                    dOriginal.Bit(i - 28, keyBits.Bit(i));
+                    d.Bit(i - 28, keyBits.Bit(i));
                 }
             }
-            //c = AllKeyShifts(c, rounds);
-            //d = AllKeyShifts(d, rounds);
+            c = AllKeyShifts(c, rounds);
+            d = AllKeyShifts(d, rounds);
             builder.AppendFormat("Left {0}{1}", left.Print(), Environment.NewLine);
             builder.AppendFormat("Right {0}{1}", right.Print(), Environment.NewLine);
             switchTemp = right; //para hacer el cambio de valores del final
@@ -198,21 +199,17 @@ namespace DES.Model
             left = switchTemp;
             builder.AppendFormat("Left {0}{1}", left.Print(), Environment.NewLine);
             builder.AppendFormat("Right {0}{1}", right.Print(), Environment.NewLine);
-            //builder.AppendFormat("c{0} {1}{2}", rounds, c.Print(), Environment.NewLine);
-            //builder.AppendFormat("d{0} {1}{2}", rounds, d.Print(), Environment.NewLine);
             builder.Append(Environment.NewLine);
             for (var i = rounds; i > 0; i--)
             {
-                //if (i != rounds) //empieza con las c y d finales
-                //{
-                //    c = KeyRightShift(c, i);
-                //    d = KeyRightShift(d, i);
-                //    builder.AppendFormat("c{0} {1}{2}", i, c.Print(), Environment.NewLine);
-                //    builder.AppendFormat("d{0} {1}{2}", i, d.Print(), Environment.NewLine);
-                //}
+                if (i != rounds) //empieza con las c y d finales
+                {
+                    c = KeyRightShift(c, i);
+                    d = KeyRightShift(d, i);
+                }
                 builder.AppendFormat("Round {0}{1}", i, Environment.NewLine);
-                var c = AllKeyShifts(cOriginal, i);
-                var d = AllKeyShifts(dOriginal, i);
+                //c = AllKeyShifts(cOriginal, i);
+                //d = AllKeyShifts(dOriginal, i);
                 builder.AppendFormat("c{0} {1}{2}", i, c.Print(), Environment.NewLine);
                 builder.AppendFormat("d{0} {1}{2}", i, d.Print(), Environment.NewLine);
                 switchTemp = right;
@@ -495,9 +492,12 @@ namespace DES.Model
         {
             switch (round)
             {
+                case 0: key.ShiftRight();
+                    break;
                 case 1: key.ShiftRight();
                     break;
                 case 2: key.ShiftRight();
+                    key.ShiftRight();
                     break;
                 case 3: key.ShiftRight();
                     key.ShiftRight();
@@ -515,9 +515,9 @@ namespace DES.Model
                     key.ShiftRight();
                     break;
                 case 8: key.ShiftRight();
-                    key.ShiftRight();
                     break;
                 case 9: key.ShiftRight();
+                    key.ShiftRight();
                     break;
                 case 10: key.ShiftRight();
                     key.ShiftRight();
@@ -535,9 +535,6 @@ namespace DES.Model
                     key.ShiftRight();
                     break;
                 case 15: key.ShiftRight();
-                    key.ShiftRight();
-                    break;
-                case 16: key.ShiftRight();
                     break;
                 default: break;
             }
